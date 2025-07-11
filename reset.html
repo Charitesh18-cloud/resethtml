@@ -13,7 +13,8 @@
 
   <script>
     const SUPABASE_URL = 'https://ymsnnnhdxkgeamqbfiqs.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inltc25ubmhkeGtnZWFtcWJmaXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxNjQwOTEsImV4cCI6MjA2Nzc0MDA5MX0.u8WyiUsz_Nr_nitQkItFt7EG5_Fk4RY6O2EjKtUQWUc'; // <-- PUT YOUR REAL ANON KEY HERE
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inltc25ubmhkeGtnZWFtcWJmaXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxNjQwOTEsImV4cCI6MjA2Nzc0MDA5MX0.u8WyiUsz_Nr_nitQkItFt7EG5_Fk4RY6O2EjKtUQWUc';
+
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const url = new URL(window.location.href);
@@ -21,6 +22,8 @@
 
     if (!access_token) {
       document.getElementById('status').innerText = 'Invalid reset link.';
+    } else {
+      supabase.auth.setSession({ access_token });
     }
 
     document.getElementById('reset-button').onclick = async () => {
@@ -30,15 +33,14 @@
         return;
       }
 
-      const { data, error } = await supabase.auth.updateUser(
-        { password: newPassword },
-        { accessToken: access_token }
-      );
+      const { data, error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
 
       if (error) {
         document.getElementById('status').innerText = `Error: ${error.message}`;
       } else {
-        document.getElementById('status').innerText = 'Password updated! You can go back to the app.';
+        document.getElementById('status').innerText = 'Password updated! Redirecting...';
         window.location.href = 'suryaocrflutter://login-callback';
       }
     };
