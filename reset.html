@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reset Password</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <h2>Reset your password</h2>
+  <div id="status"></div>
+  <input type="password" id="new-password" placeholder="New Password" />
+  <button id="reset-button">Reset Password</button>
+
+  <script>
+    const SUPABASE_URL = 'https://ymsnnnhdxkgeamqbfiqs.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inltc25ubmhkeGtnZWFtcWJmaXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxNjQwOTEsImV4cCI6MjA2Nzc0MDA5MX0.u8WyiUsz_Nr_nitQkItFt7EG5_Fk4RY6O2EjKtUQWUc'; // <-- PUT YOUR REAL ANON KEY HERE
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const url = new URL(window.location.href);
+    const access_token = url.searchParams.get('access_token');
+
+    if (!access_token) {
+      document.getElementById('status').innerText = 'Invalid reset link.';
+    }
+
+    document.getElementById('reset-button').onclick = async () => {
+      const newPassword = document.getElementById('new-password').value;
+      if (!newPassword) {
+        alert('Please enter a new password.');
+        return;
+      }
+
+      const { data, error } = await supabase.auth.updateUser(
+        { password: newPassword },
+        { accessToken: access_token }
+      );
+
+      if (error) {
+        document.getElementById('status').innerText = `Error: ${error.message}`;
+      } else {
+        document.getElementById('status').innerText = 'Password updated! You can go back to the app.';
+        window.location.href = 'suryaocrflutter://login-callback';
+      }
+    };
+  </script>
+</body>
+</html>
